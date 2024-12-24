@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Controls from "./Components/Controls";
-import Header from "./Components/Header";
+import Timer from "./Components/Controls";
 
 export class App extends Component {
   //   constructor(props) {
@@ -13,7 +13,7 @@ export class App extends Component {
   render() {
     return (
       <div className="container">
-        <Header hour={10} minute={60} second={60} />
+        
         <Controls />
       </div>
     );

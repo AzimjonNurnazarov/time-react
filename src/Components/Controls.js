@@ -1,51 +1,100 @@
 import React, { Component } from "react";
 import "./style.css";
 
+class Timer extends Component {
+  state = {
+    hours: 12, // boshlang'ich soat
+    minutes: 60, // boshlang'ich minut
+    seconds: 0, // boshlang'ich sekund
+    isRunning: false, // taymerning ishlayotganligini kuzatadi
+  };
+
+  timerInterval = null;
+
+  handleStart = () => {
+    if (!this.state.isRunning && this.getTotalSeconds() > 0) {
+      this.setState({ isRunning: true });
+      this.timerInterval = setInterval(() => {
+        this.setState((prevState) => {
+          let { hours, minutes, seconds } = prevState;
+
+          if (seconds === 0) {
+            if (minutes === 0) {
+              if (hours === 0) {
+                clearInterval(this.timerInterval); // vaqt tugaganda to'xtatadi
+                return { isRunning: false };
+              } else {
+                hours--;
+                minutes = 59;
+                seconds = 59;
+              }
+            } else {
+              minutes--;
+              seconds = 59;
+            }
+          } else {
+            seconds--;
+          }
+
+          return { hours, minutes, seconds };
+        });
+      }, 1000);
+    }
+  };
+
+  handleStop = () => {
+    clearInterval(this.timerInterval);
+    this.setState({ isRunning: false });
+  };
+
+  handleReset = () => {
+    clearInterval(this.timerInterval);
+    this.setState({ hours: 12, minutes: 60, seconds: 0, isRunning: false });
+  };
+
+  getTotalSeconds = () => {
+    const { hours, minutes, seconds } = this.state;
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
+  render() {
+    const { hours, minutes, seconds } = this.state;
+
+    return (
+      <div className="timer">
+        <h1>
+          {hours < 10 ? "0" + hours : hours} :{" "}
+          {minutes < 10 ? "0" + minutes : minutes} :{" "}
+          {seconds < 10 ? "0" + seconds : seconds}
+        </h1>
+        <Controls
+          onStart={this.handleStart}
+          onStop={this.handleStop}
+          onReset={this.handleReset}
+        />
+      </div>
+    );
+  }
+}
+
 class Controls extends Component {
   render() {
+    const { onStart, onStop, onReset } = this.props;
+
     return (
       <div className="controls">
-        <button className="puase">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-pause-fill"
-            viewBox="0 0 16 16"
-          >
-            <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
-          </svg>
+        <button className="controls-button start" onClick={onStart}>
+          Start
         </button>
-
-        <button className="stop">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-stop-fill"
-            viewBox="0 0 16 16"
-          >
-            <path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z" />
-          </svg>
+        <button className="controls-button stop" onClick={onStop}>
+          Stop
         </button>
-
-        <button className="reset">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            class="bi bi-x-lg"
-            viewBox="0 0 16 16"
-          >
-            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-          </svg>
+        <button className="controls-button reset" onClick={onReset}>
+          Reset
         </button>
       </div>
     );
   }
 }
 
-export default Controls;
+export default Timer;
